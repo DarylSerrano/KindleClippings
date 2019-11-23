@@ -1,0 +1,1 @@
+node dist\index.js clippings\clippings.txt \path\to\save
