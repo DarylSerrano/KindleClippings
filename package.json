@@ -4,7 +4,8 @@
   "description": "Parses a MyClippings.txt file from a Kindle into usefull data in json",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
