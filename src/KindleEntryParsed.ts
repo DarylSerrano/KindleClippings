@@ -1,15 +1,17 @@
 import { KindleEntry } from "./KindleEntry";
 
-const LocationRegex = Object.freeze(/\d+-\d+/);
+const LocationRegex = Object.freeze(/\d+-?\d*/);
 
 export const EntryTypeTranslations = Object.freeze({
-  NOTE: ["note", "marcador"],
-  HIGHLIGHT: ["highlight", "subrayado"]
+  NOTE: ["note", "nota"],
+  HIGHLIGHT: ["highlight", "subrayado"],
+  BOOKMARK: ["bookmark" ,"marcador"]
 });
 
 export enum EntryType {
   Note = "NOTE",
-  Highlight = "HIGHLIGHT"
+  Highlight = "HIGHLIGHT",
+  Bookmark = "BOOKMARK"
 }
 
 export class KindleEntryParsed {
@@ -20,9 +22,14 @@ export class KindleEntryParsed {
   location: string;
   dateOfCreation: string;
   type: EntryType;
+  content: string;
 
   constructor(kindleEntry: KindleEntry) {
     this.kindleEntry = kindleEntry;
+    this.content = kindleEntry.contentClipp;
+    this.parseAuthor();
+    this.parseBook();
+    this.parseMetadata();
   }
 
   parseAuthor(): void {
@@ -57,7 +64,7 @@ export class KindleEntryParsed {
 
     const closingParenthesesIndex: number = bookTitleAndAuthors.indexOf(")");
     const authors: string = bookTitleAndAuthors.substring(
-      firstOccurrenceIndex+1,
+      firstOccurrenceIndex + 1,
       closingParenthesesIndex
     );
     // Save authors
@@ -95,31 +102,26 @@ export class KindleEntryParsed {
 
   parseMetadata() {
     const metadata: string = this.kindleEntry.metdataClipp;
-    const indexOfPageSeparator: number = metadata.indexOf("|");
-    const indexOfLocationSeparator: number = metadata
-      .substring(indexOfPageSeparator + 1)
-      .indexOf("|");
-    const indexOfDateOfCreationSeparator: number = metadata
-      .substring(indexOfLocationSeparator + 1)
-      .indexOf("|");
+    const indexOfFirstSeparator: number = metadata.indexOf("|");
+    const indexOfSecondSeparator: number = metadata.indexOf(
+      "|",
+      indexOfFirstSeparator + 1
+    );
 
-    if (
-      indexOfPageSeparator === -1 ||
-      indexOfLocationSeparator === -1 ||
-      indexOfDateOfCreationSeparator === -1
-    ) {
+    if (indexOfFirstSeparator === -1 || indexOfSecondSeparator === -1) {
       throw new Error(`Could not parse metadata of: ${metadata}`);
     }
 
     // Obtaining separated strings
-    const pageMetadataStr: string = metadata.substring(0, indexOfPageSeparator);
-    const locationMetadataStr: string = metadata.substr(
-      indexOfPageSeparator + 1,
-      indexOfPageSeparator
-    );
-    const dateOfCreation: string = metadata.substring(
-      indexOfDateOfCreationSeparator + 1
-    );
+    const pageMetadataStr: string = metadata
+      .substring(0, indexOfFirstSeparator)
+      .trim();
+    const locationMetadataStr: string = metadata
+      .substring(indexOfFirstSeparator + 1, indexOfSecondSeparator)
+      .trim();
+    const dateOfCreation: string = metadata
+      .substring(indexOfSecondSeparator + 1)
+      .trim();
 
     // Page parsing
     const matchPage: RegExpExecArray | null | undefined = /\d+/.exec(
@@ -163,6 +165,7 @@ export class KindleEntryParsed {
     const pageMetaddataLowerCase: string = pageMetadataStr.toLowerCase();
     let isTypeNote: boolean = false;
     let isTypeHighlight: boolean = false;
+    let isTypeBookmark: boolean = false;
     for (const noteTranslation of EntryTypeTranslations.NOTE) {
       if (pageMetaddataLowerCase.includes(noteTranslation)) {
         isTypeNote = true;
@@ -183,10 +186,33 @@ export class KindleEntryParsed {
 
     if (isTypeHighlight) {
       return EntryType.Highlight;
-    } else {
+    }
+
+    for (const bookMarkTranslation of EntryTypeTranslations.BOOKMARK) {
+      if (pageMetaddataLowerCase.includes(bookMarkTranslation)) {
+        isTypeBookmark = true;
+        break;
+      }
+    }
+
+    if(isTypeBookmark){
+      return EntryType.Bookmark
+    }else{
       throw new Error(
         `Couldn't parse type of Entry: pageMetadataStr: ${pageMetadataStr}`
       );
     }
+  }
+
+  toJSON() {
+    return {
+      authors: this.authors,
+      bookTile: this.bookTile,
+      page: this.page,
+      location: this.location,
+      dateOfCreation: this.dateOfCreation,
+      content: this.content,
+      type: this.type
+    };
   }
 }

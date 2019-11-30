@@ -6,7 +6,8 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
-        "outDir": "dist"
+        "outDir": "bin",
+        "esModuleInterop": true
     },
     "include": [
         "src/**/*"

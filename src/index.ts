@@ -1,78 +1,52 @@
-import { createReadStream, createWriteStream } from "fs";
-import * as stream from "stream";
-import { resolve } from "path";
+#!/usr/bin/env node
+
 import * as process from "process";
-import * as readline from "readline";
-import { promisify } from "util";
-import { once } from "events";
-import { KindleEntry } from "./KindleEntry";
+import yargs from "yargs";
+import * as parser from "./parser";
 
-const finished = promisify(stream.finished);
+type Organize = "all" | "authors" | "book";
+const organizeTypes: ReadonlyArray<Organize> = ["all", "authors", "book"];
 
-// Need 2 args, filePath of the clippings kindle file, filePath where to save the .tsv generated
-
-async function readFile(path: string): Promise<Array<KindleEntry>> {
-  const fileReadLine = readline.createInterface({
-    input: createReadStream(path),
-    //output: process.stdout,
-    terminal: false
-  });
-
-  const buffer: Array<string> = []; // Always
-  const kindleClipps: Array<KindleEntry> = [];
-  let totalLines: number = 0;
-
-  for await (const line of fileReadLine) {
-    if (line.includes("==========")) {
-      console.log(buffer);
-
-      kindleClipps.push(KindleEntry.createKindleClipp(buffer));
-      buffer.splice(0);
-    } else {
-      buffer.push(line.trim());
-    }
-    totalLines++;
-  }
-
-  return kindleClipps;
+interface Arguments {
+  [x: string]: unknown;
+  inFile: string;
+  outDir: string;
+  orgType: Organize;
+  outFile: string | undefined;
 }
 
-async function saveToJsonFile(
-  clippings: Array<KindleEntry>,
-  pathToSave: string
-) {
-  // Create filestream write
-  const outWrittable = createWriteStream(resolve(pathToSave, "out.tsv"));
-  for (let i = 0; i < clippings.length; i++) {
-    let iterable = [];
-    iterable.push(clippings[i].bookTitleAndAuthors);
-    iterable.push("\t");
-    iterable.push(clippings[i].metdataClipp);
-    iterable.push("\t");
-    iterable.push(clippings[i].contentClipp);
-    iterable.push("\n");
+const args: Arguments = yargs.options({
+  inFile: { type: "string", demandOption: true, alias: "i" },
+  outDir: { type: "string", demandOption: true, alias: "d" },
+  outFile: { type: "string", alias: "f" },
+  orgType: { choices: organizeTypes, alias: "org", demandOption: true }
+}).argv;
 
-    for (const chunk of iterable) {
-      if (!outWrittable.write(chunk)) {
-        await once(outWrittable, "drain");
-      }
+async function executeCommand(args: Arguments) {
+  try {
+    let allKindleEntries = await parser.readKindleClippingFile(args.inFile);
+    let entriesParsed = parser.parseKindleEntries(allKindleEntries);
+
+    switch (args.orgType) {
+      case "all":
+        await parser.saveAllIntoFile(entriesParsed, args.outDir);
+        break;
+      case "authors":
+        await parser.saveByAuthor(entriesParsed, args.outDir);
+        break;
+      case "book":
+        await parser.saveByBookTitle(entriesParsed, args.outDir);
+        break;
+      default:
+        console.error(`No valid orgType: ${args}`);
+        break;
     }
-  }
 
-  outWrittable.end();
-  await finished(outWrittable);
+    process.exit(0);
+  } catch (err) {
+    console.error(`${err.stack}`);
+    process.exit(1);
+  }
 }
 
-(function doRead(): void {
-  readFile(resolve(process.argv[2]))
-    .catch(e => {
-      console.log("error");
-      console.log(e);
-    })
-    .then((clippings: Array<KindleEntry>) => {
-      saveToJsonFile(clippings, process.argv[3]);
-    })
-    .catch(err => {
-      console.log(err);
-    });
-})();
+executeCommand(args);

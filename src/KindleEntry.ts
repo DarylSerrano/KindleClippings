@@ -34,7 +34,7 @@ export class KindleEntry {
     }
   }
 
-  toJson(): object {
+  toJSON() {
     return {
       bookTitle: this.bookTitleAndAuthors,
       metdataClipp: this.metdataClipp,
