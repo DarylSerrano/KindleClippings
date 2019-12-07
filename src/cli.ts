@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as process from "process";
 import yargs from "yargs";
-import * as parser from "./Parser";
+import * as Parser from "./parser";
 import ora from "ora";
 import { resolve } from "path";
 
@@ -55,13 +55,13 @@ const args: Arguments = yargs
 async function executeCommand(args: Arguments) {
   const spinner = ora();
   try {
-    let allKindleEntries = await parser.readKindleClippingFile(args.inFile);
-    let entriesParsed = parser.parseKindleEntries(allKindleEntries);
+    let allKindleEntries = await Parser.readKindleClippingFile(args.inFile);
+    let entriesParsed = Parser.parseKindleEntries(allKindleEntries);
 
     switch (args.orgType) {
       case "all":
         spinner.start(`Saving data into path: ${resolve(args.outDir)}`);
-        await parser.saveAllIntoFile(
+        await Parser.saveAllIntoFile(
           entriesParsed,
           args.outDir,
           args.outFile,
@@ -72,13 +72,13 @@ async function executeCommand(args: Arguments) {
         spinner.start(
           `Saving data by author into path ${resolve(args.outDir)}`
         );
-        await parser.saveByAuthor(entriesParsed, args.outDir, args.pretty);
+        await Parser.saveByAuthor(entriesParsed, args.outDir, args.pretty);
         break;
       case "book":
         spinner.start(
           `Saving data by book title into path ${resolve(args.outDir)}`
         );
-        await parser.saveByBookTitle(entriesParsed, args.outDir, args.pretty);
+        await Parser.saveByBookTitle(entriesParsed, args.outDir, args.pretty);
         break;
       default:
         console.error(`No valid orgType: ${args}`);

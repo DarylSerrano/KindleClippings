@@ -2,7 +2,7 @@ import { createReadStream, promises, writeFileSync } from "fs";
 import { resolve } from "path";
 import * as readline from "readline";
 import { KindleEntry } from "./KindleEntry";
-import { KindleEntryParsed, EntryType } from "./KindleEntryParsed";
+import { KindleEntryParsed } from "./KindleEntryParsed";
 import Hashmap from "hashmap";
 import { type } from "os";
 
