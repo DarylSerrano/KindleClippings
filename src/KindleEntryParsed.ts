@@ -34,37 +34,29 @@ export class KindleEntryParsed {
 
   parseAuthor(): void {
     const bookTitleAndAuthors: string = this.kindleEntry.bookTitleAndAuthors;
-    let firstOccurrenceIndex: number = bookTitleAndAuthors.indexOf("(");
+    let ocurrenceIndex: number = bookTitleAndAuthors.indexOf("(");
 
-    if (firstOccurrenceIndex === -1) {
+    if (ocurrenceIndex === -1) {
       throw new Error(
         `Could not parse author from bookTitleAndAuthors of KindleEntry: ${bookTitleAndAuthors}`
       );
     }
 
-    let nextOccurrenceIndex: number = bookTitleAndAuthors.indexOf(
+    let nextOcurrenceIndex: number = bookTitleAndAuthors.indexOf(
       "(",
-      firstOccurrenceIndex + 1
+      ocurrenceIndex + 1
     );
-    let lastIndex: number = firstOccurrenceIndex;
-    for (; nextOccurrenceIndex !== -1; ) {
-      lastIndex = firstOccurrenceIndex;
-      firstOccurrenceIndex = bookTitleAndAuthors.indexOf(
+    for (; nextOcurrenceIndex !== -1 && nextOcurrenceIndex < bookTitleAndAuthors.length; ) {
+      ocurrenceIndex = nextOcurrenceIndex;
+      nextOcurrenceIndex = bookTitleAndAuthors.indexOf(
         "(",
-        firstOccurrenceIndex + 1
-      );
-      if (firstOccurrenceIndex === -1) {
-        firstOccurrenceIndex = lastIndex;
-      }
-      nextOccurrenceIndex = bookTitleAndAuthors.indexOf(
-        "(",
-        firstOccurrenceIndex + 1
+        ocurrenceIndex + 1
       );
     }
 
-    const closingParenthesesIndex: number = bookTitleAndAuthors.indexOf(")");
+    const closingParenthesesIndex: number = bookTitleAndAuthors.indexOf(")", ocurrenceIndex);
     const authors: string = bookTitleAndAuthors.substring(
-      firstOccurrenceIndex + 1,
+      ocurrenceIndex + 1,
       closingParenthesesIndex
     );
     // Save authors
@@ -97,7 +89,7 @@ export class KindleEntryParsed {
       0,
       firstOccurrenceIndex
     );
-    this.bookTile = bookTile;
+    this.bookTile = bookTile.trim();
   }
 
   parseMetadata() {

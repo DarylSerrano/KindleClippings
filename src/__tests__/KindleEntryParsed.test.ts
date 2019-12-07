@@ -18,105 +18,126 @@ const sampleEntries: Array<DataEntry> = [
       "- La subrayado en la página 197 | posición 2031-2035 | Añadido el sábado, 12 de octubre de 2019 0:37:31",
       "この部室は内側から施錠できるし、覗き窓みたいなものもない。"
     ),
-    titleParsed: "非オタの彼女が俺の持ってるエロゲに興味津々なんだが…… ",
+    titleParsed: "非オタの彼女が俺の持ってるエロゲに興味津々なんだが……",
     author: "滝沢　慧;睦茸",
     page: 197,
     location: "2031-2035",
     dateOfCreation: "Añadido el sábado, 12 de octubre de 2019 0:37:31",
+    type: EntryType.Highlight
+  },
+  {
+    entry: new KindleEntry(
+      "僕が七不思議になったわけ (メディアワークス文庫) (小川 晴央)",
+      "- La subrayado en la página 14 | posición 182-183 | Añadido el lunes, 25 de noviembre de 2019 0:43:38",
+      "彼女は椅子から立ち上がると、落ち葉の様なスピードでゆっくりと床に降りた。着地の際に足元の埃が舞うだけで、音は一切しない。"
+    ),
+    titleParsed: "僕が七不思議になったわけ (メディアワークス文庫)",
+    author: "小川 晴央",
+    page: 14,
+    location: "182-183",
+    dateOfCreation: "Añadido el lunes, 25 de noviembre de 2019 0:43:38",
     type: EntryType.Highlight
   }
 ];
 
 // eslint-disable-next-line no-undef
 describe("KindleEntryParsed", () => {
-  let sampleEntry: DataEntry;
-  beforeEach(() => {
-    sampleEntry = sampleEntries[0];
-  });
 
   describe("parseAuthor", () => {
     test("Obtains author", () => {
       // AAA
-      // Arrange
-      const kindleParsed: KindleEntryParsed = new KindleEntryParsed(
-        sampleEntry.entry
-      );
+      sampleEntries.forEach(sampleEntry => {
+        // Arrange
+        const kindleParsed: KindleEntryParsed = new KindleEntryParsed(
+          sampleEntry.entry
+        );
 
-      // Act
-      kindleParsed.parseAuthor();
+        // Act
+        kindleParsed.parseAuthor();
 
-      // Assert
-      expect(kindleParsed.authors).toBe(sampleEntry.author);
+        // Assert
+        expect(kindleParsed.authors).toBe(sampleEntry.author);
+      });
     });
   });
 
   describe("parseBook", () => {
     test("Obtains book title", () => {
-      // Arrange
-      const kindleParsed: KindleEntryParsed = new KindleEntryParsed(
-        sampleEntry.entry
-      );
+      sampleEntries.forEach(sampleEntry => {
+        // Arrange
+        const kindleParsed: KindleEntryParsed = new KindleEntryParsed(
+          sampleEntry.entry
+        );
 
-      // Act
-      kindleParsed.parseBook();
+        // Act
+        kindleParsed.parseBook();
 
-      // Assert
-      expect(kindleParsed.bookTile).toBe(sampleEntry.titleParsed);
+        // Assert
+        expect(kindleParsed.bookTile).toBe(sampleEntry.titleParsed);
+      });
     });
   });
 
   describe("parseEntryType", () => {
     test("Obtains correct entry type", () => {
-      // Arrange
-      const kindleParsed: KindleEntryParsed = new KindleEntryParsed(
-        sampleEntry.entry
-      );
+      sampleEntries.forEach(sampleEntry => {
+        // Arrange
+        const kindleParsed: KindleEntryParsed = new KindleEntryParsed(
+          sampleEntry.entry
+        );
 
-      // Act
-      let entryTypeObtained: EntryType = kindleParsed.parseEntryType(
-        sampleEntry.entry.metdataClipp
-      );
+        // Act
+        let entryTypeObtained: EntryType = kindleParsed.parseEntryType(
+          sampleEntry.entry.metdataClipp
+        );
 
-      // Assert
-      expect(entryTypeObtained).toBe(sampleEntry.type);
+        // Assert
+        expect(entryTypeObtained).toBe(sampleEntry.type);
+      });
     });
   });
 
   describe("parseMetadata", () => {
     test("Obtains correct page", () => {
-      // Arrange
-      const kindleParsed: KindleEntryParsed = new KindleEntryParsed(
-        sampleEntry.entry
-      );
-      // Act
-      kindleParsed.parseMetadata();
+      sampleEntries.forEach(sampleEntry => {
+        // Arrange
+        const kindleParsed: KindleEntryParsed = new KindleEntryParsed(
+          sampleEntry.entry
+        );
+        // Act
+        kindleParsed.parseMetadata();
 
-      // Assert
-      expect(kindleParsed.page).toBe(sampleEntry.page);
+        // Assert
+        expect(kindleParsed.page).toBe(sampleEntry.page);
+      });
     });
 
     test("Obtains correct location", () => {
-      // Arrange
-      const kindleParsed: KindleEntryParsed = new KindleEntryParsed(
-        sampleEntry.entry
-      );
-      // Act
-      kindleParsed.parseMetadata();
+      sampleEntries.forEach(sampleEntry => {
+        // Arrange
+        const kindleParsed: KindleEntryParsed = new KindleEntryParsed(
+          sampleEntry.entry
+        );
+        // Act
+        kindleParsed.parseMetadata();
 
-      // Assert
-      expect(kindleParsed.location).toBe(sampleEntry.location);
+        // Assert
+        expect(kindleParsed.location).toBe(sampleEntry.location);
+      });
     });
 
     test("Obtains correct date of creation", () => {
-      // Arrange
-      const kindleParsed: KindleEntryParsed = new KindleEntryParsed(
-        sampleEntry.entry
-      );
-      // Act
-      kindleParsed.parseMetadata();
+      sampleEntries.forEach(sampleEntry => {
+        // Arrange
+        const kindleParsed: KindleEntryParsed = new KindleEntryParsed(
+          sampleEntry.entry
+        );
+        // Act
+        kindleParsed.parseMetadata();
 
-      // Assert
-      expect(kindleParsed.dateOfCreation).toBe(sampleEntry.dateOfCreation);
+        // Assert
+        expect(kindleParsed.dateOfCreation).toBe(sampleEntry.dateOfCreation);
+      });
     });
   });
 });
