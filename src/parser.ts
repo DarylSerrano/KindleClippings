@@ -4,14 +4,11 @@ import * as readline from "readline";
 import { KindleEntry } from "./KindleEntry";
 import { KindleEntryParsed, EntryType } from "./KindleEntryParsed";
 import Hashmap from "hashmap";
-import ora from "ora";
 import { type } from "os";
 
 export async function readKindleClippingFile(
   path: string
 ): Promise<Array<KindleEntry>> {
-  const spinner = ora(`Reading input file ${path}`).start();
-
   try {
     const fileReadLine = readline.createInterface({
       input: createReadStream(path),
@@ -35,58 +32,69 @@ export async function readKindleClippingFile(
         }
         totalLines++;
       } catch (err) {
-        console.error(`Error parsing on line: ${totalLines} of file: ${path}`);
-        throw err;
+        throw new Error(
+          `Error parsing on line: ${totalLines} of file: ${path}`
+        );
       }
     }
 
     return kindleClipps;
   } catch (err) {
-    console.error(`Error: ${err}`);
     throw err;
-  } finally {
-    spinner.stop();
+  }
+}
+
+export function readKindleClipping(kindleClipping: string): Array<KindleEntry> {
+  try {
+    const buffer: Array<string> = [];
+    const kindleClipps: Array<KindleEntry> = [];
+    let totalLines: number = 0;
+    let lines: Array<string> = kindleClipping.split("\n");
+
+    
+    for (const line of lines) {
+      try {
+        if (line.includes("==========")) {
+          // console.log(buffer);
+
+          kindleClipps.push(KindleEntry.createKindleClipp(buffer));
+          buffer.splice(0);
+        } else {
+          buffer.push(line.trim());
+        }
+        totalLines++;
+      } catch (err) {
+        throw new Error(
+          `Error parsing on line: ${totalLines}`
+        );
+      }
+    }
+
+    return kindleClipps;
+  } catch (err) {
+    throw err;
   }
 }
 
 export function parseKindleEntries(
   kindleEntries: Array<KindleEntry>
 ): Array<KindleEntryParsed> {
-  const spinner = ora(`Parsing Kindle entries`).start();
+  const kindleEntriesParsed: Array<KindleEntryParsed> = [];
 
-  try {
-    const kindleEntriesParsed: Array<KindleEntryParsed> = [];
-
-    kindleEntries.forEach(entry => {
-      kindleEntriesParsed.push(new KindleEntryParsed(entry));
-    });
-
-    spinner.stop();
-    return kindleEntriesParsed;
-  } catch (err) {
-    console.error(`Error parsing kindle entries: ${err}`);
-    throw err;
-  } finally {
-    spinner.stop();
-  }
+  kindleEntries.forEach(entry => {
+    kindleEntriesParsed.push(new KindleEntryParsed(entry));
+  });
+  return kindleEntriesParsed;
 }
 
 export async function saveAllIntoFile(
   entriesParsed: Array<KindleEntryParsed>,
   pathToSave: string,
-  filename?: string
+  filename?: string,
+  pretty?: boolean
 ): Promise<any> {
-  const spinner = ora(`Saving data into path: ${pathToSave}`).start();
-
-  try {
-    let outPath = resolve(pathToSave, filename ? filename : "out.json");
-    await promises.writeFile(outPath, JSON.stringify(entriesParsed));
-  } catch (err) {
-    console.error(`Could not save to file ${err}`);
-    throw err;
-  } finally {
-    spinner.stop();
-  }
+  let outPath = resolve(pathToSave, filename ? filename : "out.json");
+  await promises.writeFile(outPath, JSON.stringify(entriesParsed, null, pretty? 4 : null));
 }
 
 export function organizeKindleEntriesByBookTitle(
@@ -131,89 +139,69 @@ export function organizeKindleEntriesByAuthors(
 
 export async function saveByBookTitle(
   entriesParsed: Array<KindleEntryParsed>,
-  pathToSave: string
+  pathToSave: string,
+  pretty?: boolean
 ): Promise<any> {
-  const spinner = ora(
-    `Saving data by book title into path ${pathToSave}`
-  ).start();
+  let outPath = resolve(pathToSave);
 
-  try {
-    let outPath = resolve(pathToSave);
+  const kindleEntriesOrganized = organizeKindleEntriesByBookTitle(
+    entriesParsed
+  );
 
-    const kindleEntriesOrganized = organizeKindleEntriesByBookTitle(
-      entriesParsed
-    );
+  await kindleEntriesOrganized.forEach(async (kindleEntries, bookTitle) => {
+    let dataOut = {
+      bookTile: bookTitle,
+      entries: kindleEntries
+    };
 
-    await kindleEntriesOrganized.forEach(async (kindleEntries, bookTitle) => {
-      let dataOut = {
-        bookTile: bookTitle,
-        entries: kindleEntries
-      };
+    let filename = `${bookTitle}.json`;
+    let dataPathOut = resolve(outPath, filename);
 
-      let filename = `${bookTitle}.json`;
-      let dataPathOut = resolve(outPath, filename);
-
-      // Determine os and use sync or promise write
-      if (
-        type()
-          .toLowerCase()
-          .includes("win") ||
-        type()
-          .toLowerCase()
-          .includes("windows")
-      ) {
-        writeFileSync(dataPathOut, JSON.stringify(dataOut));
-      } else {
-        await promises.writeFile(dataPathOut, JSON.stringify(dataOut));
-      }
-    });
-  } catch (err) {
-    console.error(`Could not save to file ${err}`);
-    throw err;
-  } finally {
-    spinner.stop();
-  }
+    // Determine os and use sync or promise write
+    if (
+      type()
+        .toLowerCase()
+        .includes("win") ||
+      type()
+        .toLowerCase()
+        .includes("windows")
+    ) {
+      writeFileSync(dataPathOut, JSON.stringify(dataOut, null, pretty? 4 : null));
+    } else {
+      await promises.writeFile(dataPathOut, JSON.stringify(dataOut, null, pretty? 4 : null));
+    }
+  });
 }
 
 export async function saveByAuthor(
   entriesParsed: Array<KindleEntryParsed>,
-  pathToSave: string
+  pathToSave: string,
+  pretty?: boolean
 ): Promise<any> {
-  const spinner = ora(`Saving data by author into path ${pathToSave}`).start();
+  let outPath = resolve(pathToSave);
 
-  try {
-    let outPath = resolve(pathToSave);
+  const kindleEntriesOrganized = organizeKindleEntriesByAuthors(entriesParsed);
 
-    const kindleEntriesOrganized = organizeKindleEntriesByAuthors(
-      entriesParsed
-    );
+  kindleEntriesOrganized.forEach(async (kindleEntries, authors) => {
+    let dataOut = {
+      authors: authors,
+      entries: kindleEntries
+    };
 
-    kindleEntriesOrganized.forEach(async (kindleEntries, authors) => {
-      let dataOut = {
-        authors: authors,
-        entries: kindleEntries
-      };
-
-      let filename = `${authors}.json`;
-      let dataPathOut = resolve(outPath, filename);
-      // Determine os and use sync or promise write
-      if (
-        type()
-          .toLowerCase()
-          .includes("win") ||
-        type()
-          .toLowerCase()
-          .includes("windows")
-      ) {
-        writeFileSync(dataPathOut, JSON.stringify(dataOut));
-      } else {
-        await promises.writeFile(dataPathOut, JSON.stringify(dataOut));
-      }
-    });
-  } catch (err) {
-    console.error(`Could not save to file ${err}`);
-    throw err;
-  } finally {
-    spinner.stop();
-  }
+    let filename = `${authors}.json`;
+    let dataPathOut = resolve(outPath, filename);
+    // Determine os and use sync or promise write
+    if (
+      type()
+        .toLowerCase()
+        .includes("win") ||
+      type()
+        .toLowerCase()
+        .includes("windows")
+    ) {
+      writeFileSync(dataPathOut, JSON.stringify(dataOut, null, pretty? 4 : null));
+    } else {
+      await promises.writeFile(dataPathOut, JSON.stringify(dataOut, null, pretty? 4 : null));
+    }
+  });
 }

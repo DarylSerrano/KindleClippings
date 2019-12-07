@@ -6,14 +6,17 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
-        "outDir": "bin",
-        "esModuleInterop": true
+        "outDir": "dist",
+        "esModuleInterop": true,
+        "declaration": true,
+        "declarationDir": "dist",
+        "declarationMap": true
     },
     "include": [
         "src/**/*"
     ],
     "exclude": [
         "node_modules",
-        "**/*.spec.ts"
+        "src/__tests__/*"
     ]
 }

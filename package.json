@@ -1,15 +1,15 @@
 {
   "name": "kindle-clippings",
   "version": "1.0.0",
-  "description": "Parses a MyClippings.txt file from a Kindle into usefull data in json",
-  "main": "index.js",
+  "description": "CLI tool for parsing a MyClippings.txt file obtained from a Kindle into usefull data in json",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "dev": "ts-node src/index.ts"
+    "dev": "ts-node src/cli.ts"
   },
   "bin": {
-    "kindle-clippings": "./bin/index.js"
+    "kindle-clippings": "dist/cli.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,7 @@
   "keywords": [],
   "author": "Daryl Serrano Hipolito",
   "license": "MIT",
+  "types": "dist/",
   "devDependencies": {
     "@types/cli-spinners": "^1.3.0",
     "@types/hashmap": "^2.3.0",
