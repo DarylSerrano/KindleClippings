@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import * as process from "process";
 import yargs from "yargs";
 import * as Parser from "./parser";
 import ora from "ora";
@@ -45,7 +44,7 @@ const args: Arguments = yargs
   })
   .usage("Usage: $0  [options]")
   .example(
-    '$0 -i "My Clippings.txt" -d "./clippings"',
+    'kindle-clippings -i "My Clippings.txt" -d "./clippings"',
     "Parse information into a file in json on the directory ./clippings"
   )
   .epilog(
@@ -88,7 +87,7 @@ async function executeCommand(args: Arguments) {
     process.exit(0);
   } catch (err) {
     console.error(`${err}`);
-    console.error(`${err.stack}`);
+    // console.error(`${err.stack}`);
     process.exit(1);
   } finally {
     spinner.stop();
@@ -96,3 +95,8 @@ async function executeCommand(args: Arguments) {
 }
 
 executeCommand(args);
+
+process.on('uncaughtException', function (err) {
+  console.error(`${err}`)
+  process.exit(1);
+});

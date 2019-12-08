@@ -6,12 +6,17 @@ import { KindleEntryParsed } from "./KindleEntryParsed";
 import Hashmap from "hashmap";
 import { type } from "os";
 
+/**
+ * Reads a file returning an Array of KindleEntry
+ * @param path 
+ */
 export async function readKindleClippingFile(
   path: string
 ): Promise<Array<KindleEntry>> {
   try {
+    const readStreamFile = createReadStream(path);
     const fileReadLine = readline.createInterface({
-      input: createReadStream(path),
+      input: readStreamFile,
       //output: process.stdout,
       terminal: false
     });
@@ -44,13 +49,16 @@ export async function readKindleClippingFile(
   }
 }
 
+/**
+ * Read a string line by line returns an Array of KindleEntry
+ * @param kindleClipping 
+ */
 export function readKindleClipping(kindleClipping: string): Array<KindleEntry> {
   try {
     const buffer: Array<string> = [];
     const kindleClipps: Array<KindleEntry> = [];
     let totalLines: number = 0;
     let lines: Array<string> = kindleClipping.split("\n");
-
     
     for (const line of lines) {
       try {
@@ -76,6 +84,10 @@ export function readKindleClipping(kindleClipping: string): Array<KindleEntry> {
   }
 }
 
+/**
+ * Takes and array of KindleEntry and perses de data into an Array of KindleEntryParsed
+ * @param kindleEntries 
+ */
 export function parseKindleEntries(
   kindleEntries: Array<KindleEntry>
 ): Array<KindleEntryParsed> {
@@ -87,6 +99,13 @@ export function parseKindleEntries(
   return kindleEntriesParsed;
 }
 
+/**
+ * Saves all the data into a json file
+ * @param entriesParsed 
+ * @param pathToSave 
+ * @param filename 
+ * @param pretty 
+ */
 export async function saveAllIntoFile(
   entriesParsed: Array<KindleEntryParsed>,
   pathToSave: string,
@@ -97,6 +116,11 @@ export async function saveAllIntoFile(
   await promises.writeFile(outPath, JSON.stringify(entriesParsed, null, pretty? 4 : null));
 }
 
+/**
+ * Organize the data into a HashMap<string, Array<KindleEntryParsed>> 
+ * where each key represents the Book title
+ * @param entriesParsed 
+ */
 export function organizeKindleEntriesByBookTitle(
   entriesParsed: Array<KindleEntryParsed>
 ): Hashmap<string, Array<KindleEntryParsed>> {
@@ -117,6 +141,11 @@ export function organizeKindleEntriesByBookTitle(
   return kindleEntriesOrganized;
 }
 
+/**
+ * Organize the data into a HashMap<string, Array<KindleEntryParsed>> 
+ * where each key represents the authors
+ * @param entriesParsed 
+ */
 export function organizeKindleEntriesByAuthors(
   entriesParsed: Array<KindleEntryParsed>
 ): Hashmap<string, Array<KindleEntryParsed>> {
@@ -137,6 +166,12 @@ export function organizeKindleEntriesByAuthors(
   return kindleEntriesOrganized;
 }
 
+/**
+ * Save the data organized by book title into a json file
+ * @param entriesParsed 
+ * @param pathToSave 
+ * @param pretty 
+ */
 export async function saveByBookTitle(
   entriesParsed: Array<KindleEntryParsed>,
   pathToSave: string,
@@ -173,6 +208,12 @@ export async function saveByBookTitle(
   });
 }
 
+/**
+ * Save the data organized by authors into a json file
+ * @param entriesParsed 
+ * @param pathToSave 
+ * @param pretty 
+ */
 export async function saveByAuthor(
   entriesParsed: Array<KindleEntryParsed>,
   pathToSave: string,
