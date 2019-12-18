@@ -2,8 +2,7 @@
   "name": "@darylserrano/kindle-clippings",
   "version": "1.0.3",
   "description": "CLI tool for parsing a MyClippings.txt file obtained from a Kindle into usefull data in json",
-  "main": "dist/node/index.js",
-  "browser": "dist/browser/index.js",
+  "main": "dist/node/node/index.js",
   "scripts": {
     "test": "jest",
     "build": "tsc",

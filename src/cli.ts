@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 import yargs from "yargs";
 import * as Parser from "./parser";
+import {
+  readKindleClippingFile,
+  saveAllIntoFile,
+  saveByAuthorFile,
+  saveByBookTitleFile
+} from "./node/io";
 import ora from "ora";
 import { resolve } from "path";
 
@@ -42,7 +48,7 @@ const args: Arguments = yargs
       describe: "Prints the output json in a readable format"
     }
   })
-  .usage("Usage: $0  [options]")
+  .usage("Usage: kindle-clippings [options]")
   .example(
     'kindle-clippings -i "My Clippings.txt" -d "./clippings"',
     "Parse information into a file in json on the directory ./clippings"
@@ -54,13 +60,13 @@ const args: Arguments = yargs
 async function executeCommand(args: Arguments) {
   const spinner = ora();
   try {
-    let allKindleEntries = await Parser.readKindleClippingFile(args.inFile);
+    let allKindleEntries = await readKindleClippingFile(args.inFile);
     let entriesParsed = Parser.parseKindleEntries(allKindleEntries);
 
     switch (args.orgType) {
       case "all":
         spinner.start(`Saving data into path: ${resolve(args.outDir)}`);
-        await Parser.saveAllIntoFile(
+        await saveAllIntoFile(
           entriesParsed,
           args.outDir,
           args.outFile,
@@ -71,13 +77,13 @@ async function executeCommand(args: Arguments) {
         spinner.start(
           `Saving data by author into path ${resolve(args.outDir)}`
         );
-        await Parser.saveByAuthor(entriesParsed, args.outDir, args.pretty);
+        await saveByAuthorFile(entriesParsed, args.outDir, args.pretty);
         break;
       case "book":
         spinner.start(
           `Saving data by book title into path ${resolve(args.outDir)}`
         );
-        await Parser.saveByBookTitle(entriesParsed, args.outDir, args.pretty);
+        await saveByBookTitleFile(entriesParsed, args.outDir, args.pretty);
         break;
       default:
         console.error(`No valid orgType: ${args}`);
@@ -96,7 +102,7 @@ async function executeCommand(args: Arguments) {
 
 executeCommand(args);
 
-process.on('uncaughtException', function (err) {
-  console.error(`${err}`)
+process.on("uncaughtException", function(err) {
+  console.error(`${err}`);
   process.exit(1);
 });

@@ -1,0 +1,26 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        // "noImplicitAny": true,
+        // "removeComments": false,
+        // "preserveConstEnums": true,
+        // "sourceMap": true,
+        "outDir": "dist/browser",
+        // "esModuleInterop": true,
+        // "declaration": true,
+        "declarationDir": "dist/browser",
+        // "declarationMap": true,
+        "lib": ["DOM", "ES6"]
+    },
+    // "include": [
+    //     "src/**/*"
+    // ],
+    "exclude": [
+        "src/cli.ts",
+        "src/node/**/*",
+        "node_modules",
+        "src/__tests__/*"
+    ]
+}
