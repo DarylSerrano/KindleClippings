@@ -15,10 +15,19 @@ var EntryType;
 class KindleEntryParsed {
     constructor(kindleEntry) {
         this.kindleEntry = kindleEntry;
-        this.content = kindleEntry.contentClipp;
+        if (kindleEntry.contentClipp.length === 0) {
+            this.content = "No content";
+        }
+        else {
+            this.content = kindleEntry.contentClipp;
+        }
         this.parseAuthor();
         this.parseBook();
         this.parseMetadata();
+        if (this.type === EntryType.Bookmark) {
+            // Add placeholer for the content
+            this.content = "No content";
+        }
     }
     parseAuthor() {
         const bookTitleAndAuthors = this.kindleEntry.bookTitleAndAuthors;
@@ -27,7 +36,8 @@ class KindleEntryParsed {
             throw new Error(`Could not parse author from bookTitleAndAuthors of KindleEntry: ${bookTitleAndAuthors}`);
         }
         let nextOcurrenceIndex = bookTitleAndAuthors.indexOf("(", ocurrenceIndex + 1);
-        for (; nextOcurrenceIndex !== -1 && nextOcurrenceIndex < bookTitleAndAuthors.length;) {
+        for (; nextOcurrenceIndex !== -1 &&
+            nextOcurrenceIndex < bookTitleAndAuthors.length;) {
             ocurrenceIndex = nextOcurrenceIndex;
             nextOcurrenceIndex = bookTitleAndAuthors.indexOf("(", ocurrenceIndex + 1);
         }
@@ -75,7 +85,7 @@ class KindleEntryParsed {
             throw new Error(`Can't parse page number from pageMetadataStr: ${pageMetadataStr}`);
         }
         const page = Number(matchPage[0]);
-        if (page === NaN) {
+        if (isNaN(page)) {
             throw new Error(`Can't parse page number of: matchPage: ${matchPage} from pageMetadataStr: ${pageMetadataStr}`);
         }
         else {
