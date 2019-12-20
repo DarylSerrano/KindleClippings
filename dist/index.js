@@ -6,4 +6,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./KindleEntry"));
 __export(require("./KindleEntryParsed"));
 __export(require("./parser"));
+__export(require("./organizer"));
 //# sourceMappingURL=index.js.map
