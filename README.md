@@ -1,6 +1,6 @@
 # KindleClippings 
 [![npm version](https://badge.fury.io/js/%40darylserrano%2Fkindle-clippings.svg)](https://badge.fury.io/js/%40darylserrano%2Fkindle-clippings)
-
+<span class="badge-daviddm"><a href="https://david-dm.org/DarylSerrano/KindleClippings" title="View the status of this project's dependencies on DavidDM"><img src="https://david-dm.org/DarylSerrano/KindleClippings.svg" alt="Dependency Status" /></a></span>
 
 WIP package for parsing a MyClippings.txt file obtained from a Kindle and organizing it
 
