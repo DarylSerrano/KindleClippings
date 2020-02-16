@@ -1,24 +1,27 @@
 import { KindleEntryParsed } from "./KindleEntryParsed";
-import Hashmap from "hashmap";
 
 /**
- * Organize the data into a HashMap<string, Array<KindleEntryParsed>>
+ * Organize the data into a Map<string, Array<KindleEntryParsed>>
  * where each key represents the Book title
  * @param entriesParsed
  */
 export function organizeKindleEntriesByBookTitle(
   entriesParsed: Array<KindleEntryParsed>,
-  kindleEntriesOrganized?: Hashmap<string, Array<KindleEntryParsed>>
-): Hashmap<string, Array<KindleEntryParsed>> {
-  let newKindleEntriesOrganized: Hashmap<
+  kindleEntriesOrganized?: Map<string, Array<KindleEntryParsed>>
+): Map<string, Array<KindleEntryParsed>> {
+  let newKindleEntriesOrganized: Map<
     string,
     Array<KindleEntryParsed>
   > | null = null;
 
+  if(entriesParsed.length === 0){
+    throw new Error("entriesParsed empty");
+  }
+
   if (kindleEntriesOrganized) {
     newKindleEntriesOrganized = kindleEntriesOrganized;
   } else {
-    newKindleEntriesOrganized = new Hashmap();
+    newKindleEntriesOrganized = new Map();
   }
 
   entriesParsed.forEach(entry => {
@@ -34,23 +37,27 @@ export function organizeKindleEntriesByBookTitle(
 }
 
 /**
- * Organize the data into a HashMap<string, Array<KindleEntryParsed>>
+ * Organize the data into a Map<string, Array<KindleEntryParsed>>
  * where each key represents the authors
  * @param entriesParsed
  */
 export function organizeKindleEntriesByAuthors(
   entriesParsed: Array<KindleEntryParsed>,
-  kindleEntriesOrganized?: Hashmap<string, Array<KindleEntryParsed>>
-): Hashmap<string, Array<KindleEntryParsed>> {
-  let newKindleEntriesOrganized: Hashmap<
+  kindleEntriesOrganized?: Map<string, Array<KindleEntryParsed>>
+): Map<string, Array<KindleEntryParsed>> {
+  let newKindleEntriesOrganized: Map<
     string,
     Array<KindleEntryParsed>
   > | null = null;
 
+  if(entriesParsed.length === 0){
+    throw new Error("entriesParsed empty");
+  }
+
   if (kindleEntriesOrganized) {
     newKindleEntriesOrganized = kindleEntriesOrganized;
   } else {
-    newKindleEntriesOrganized = new Hashmap();
+    newKindleEntriesOrganized = new Map();
   }
 
   entriesParsed.forEach(entry => {
@@ -62,5 +69,5 @@ export function organizeKindleEntriesByAuthors(
     }
   });
 
-  return kindleEntriesOrganized;
+  return newKindleEntriesOrganized;
 }
