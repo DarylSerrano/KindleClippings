@@ -5,7 +5,7 @@ const LocationRegex = Object.freeze(/\d+-?\d*/);
 export const EntryTypeTranslations = Object.freeze({
   NOTE: ["note", "nota"],
   HIGHLIGHT: ["highlight", "subrayado"],
-  BOOKMARK: ["bookmark" ,"marcador"]
+  BOOKMARK: ["bookmark", "marcador"]
 });
 
 export enum EntryType {
@@ -26,10 +26,18 @@ export class KindleEntryParsed {
 
   constructor(kindleEntry: KindleEntry) {
     this.kindleEntry = kindleEntry;
-    this.content = kindleEntry.contentClipp;
+    if(kindleEntry.contentClipp.length === 0){
+      this.content = "No content"
+    }else{
+      this.content = kindleEntry.contentClipp;
+    }
     this.parseAuthor();
     this.parseBook();
     this.parseMetadata();
+    if (this.type === EntryType.Bookmark) {
+      // Add placeholer for the content
+      this.content = "No content";
+    }
   }
 
   parseAuthor(): void {
@@ -46,15 +54,20 @@ export class KindleEntryParsed {
       "(",
       ocurrenceIndex + 1
     );
-    for (; nextOcurrenceIndex !== -1 && nextOcurrenceIndex < bookTitleAndAuthors.length; ) {
+    for (
+      ;
+      nextOcurrenceIndex !== -1 &&
+      nextOcurrenceIndex < bookTitleAndAuthors.length;
+
+    ) {
       ocurrenceIndex = nextOcurrenceIndex;
-      nextOcurrenceIndex = bookTitleAndAuthors.indexOf(
-        "(",
-        ocurrenceIndex + 1
-      );
+      nextOcurrenceIndex = bookTitleAndAuthors.indexOf("(", ocurrenceIndex + 1);
     }
 
-    const closingParenthesesIndex: number = bookTitleAndAuthors.indexOf(")", ocurrenceIndex);
+    const closingParenthesesIndex: number = bookTitleAndAuthors.indexOf(
+      ")",
+      ocurrenceIndex
+    );
     const authors: string = bookTitleAndAuthors.substring(
       ocurrenceIndex + 1,
       closingParenthesesIndex
@@ -125,7 +138,7 @@ export class KindleEntryParsed {
       );
     }
     const page: number = Number(matchPage[0]);
-    if (page === NaN) {
+    if (isNaN(page)) {
       throw new Error(
         `Can't parse page number of: matchPage: ${matchPage} from pageMetadataStr: ${pageMetadataStr}`
       );
@@ -187,9 +200,9 @@ export class KindleEntryParsed {
       }
     }
 
-    if(isTypeBookmark){
-      return EntryType.Bookmark
-    }else{
+    if (isTypeBookmark) {
+      return EntryType.Bookmark;
+    } else {
       throw new Error(
         `Couldn't parse type of Entry: pageMetadataStr: ${pageMetadataStr}`
       );
