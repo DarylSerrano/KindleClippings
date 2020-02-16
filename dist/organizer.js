@@ -1,21 +1,20 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const hashmap_1 = __importDefault(require("hashmap"));
 /**
- * Organize the data into a HashMap<string, Array<KindleEntryParsed>>
+ * Organize the data into a Map<string, Array<KindleEntryParsed>>
  * where each key represents the Book title
  * @param entriesParsed
  */
 function organizeKindleEntriesByBookTitle(entriesParsed, kindleEntriesOrganized) {
     let newKindleEntriesOrganized = null;
+    if (entriesParsed.length === 0) {
+        throw new Error("entriesParsed empty");
+    }
     if (kindleEntriesOrganized) {
         newKindleEntriesOrganized = kindleEntriesOrganized;
     }
     else {
-        newKindleEntriesOrganized = new hashmap_1.default();
+        newKindleEntriesOrganized = new Map();
     }
     entriesParsed.forEach(entry => {
         let bookTitle = entry.bookTile;
@@ -30,17 +29,20 @@ function organizeKindleEntriesByBookTitle(entriesParsed, kindleEntriesOrganized)
 }
 exports.organizeKindleEntriesByBookTitle = organizeKindleEntriesByBookTitle;
 /**
- * Organize the data into a HashMap<string, Array<KindleEntryParsed>>
+ * Organize the data into a Map<string, Array<KindleEntryParsed>>
  * where each key represents the authors
  * @param entriesParsed
  */
 function organizeKindleEntriesByAuthors(entriesParsed, kindleEntriesOrganized) {
     let newKindleEntriesOrganized = null;
+    if (entriesParsed.length === 0) {
+        throw new Error("entriesParsed empty");
+    }
     if (kindleEntriesOrganized) {
         newKindleEntriesOrganized = kindleEntriesOrganized;
     }
     else {
-        newKindleEntriesOrganized = new hashmap_1.default();
+        newKindleEntriesOrganized = new Map();
     }
     entriesParsed.forEach(entry => {
         let authors = entry.authors;
@@ -51,7 +53,7 @@ function organizeKindleEntriesByAuthors(entriesParsed, kindleEntriesOrganized) {
             newKindleEntriesOrganized.set(authors, [entry]);
         }
     });
-    return kindleEntriesOrganized;
+    return newKindleEntriesOrganized;
 }
 exports.organizeKindleEntriesByAuthors = organizeKindleEntriesByAuthors;
 //# sourceMappingURL=organizer.js.map
