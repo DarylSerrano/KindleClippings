@@ -37,6 +37,19 @@ const sampleEntries: Array<DataEntry> = [
     location: "182-183",
     dateOfCreation: "Añadido el lunes, 25 de noviembre de 2019 0:43:38",
     type: EntryType.Highlight
+  },
+  {
+    entry: new KindleEntry(
+      "Ｃｈａｏｓ；Ｃｈｉｌｄ　－Ｃｈｉｌｄｒｅｎ’ｓ　Ｒｅｖｉｖｅ－ (講談社ラノベ文庫) (ＭＡＧＥＳ．;Ｃｈｉｙｏ ｓｔ．ｉｎｃ;梅原英司)",
+      "- Your Highlight on Location 35-36 | Added on Monday, July 20, 2020 12:58:07 AM",
+      "軟禁状態であったことは事実なのだから、おそらく外の人間からすれば、人権を無視された酷い生活に見えたのだろう。"
+    ),
+    titleParsed: "Ｃｈａｏｓ；Ｃｈｉｌｄ　－Ｃｈｉｌｄｒｅｎ’ｓ　Ｒｅｖｉｖｅ－ (講談社ラノベ文庫)",
+    author: "ＭＡＧＥＳ．;Ｃｈｉｙｏ ｓｔ．ｉｎｃ;梅原英司",
+    page: 0,
+    location: "35-36",
+    dateOfCreation: "Added on Monday, July 20, 2020 12:58:07 AM",
+    type: EntryType.Highlight
   }
 ];
 
