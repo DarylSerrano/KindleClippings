@@ -5,13 +5,13 @@ const LocationRegex = Object.freeze(/\d+-?\d*/);
 export const EntryTypeTranslations = Object.freeze({
   NOTE: ["note", "nota"],
   HIGHLIGHT: ["highlight", "subrayado"],
-  BOOKMARK: ["bookmark", "marcador"]
+  BOOKMARK: ["bookmark", "marcador"],
 });
 
 export enum EntryType {
   Note = "NOTE",
   Highlight = "HIGHLIGHT",
-  Bookmark = "BOOKMARK"
+  Bookmark = "BOOKMARK",
 }
 
 export class KindleEntryParsed {
@@ -26,9 +26,9 @@ export class KindleEntryParsed {
 
   constructor(kindleEntry: KindleEntry) {
     this.kindleEntry = kindleEntry;
-    if(kindleEntry.contentClipp.length === 0){
-      this.content = "No content"
-    }else{
+    if (kindleEntry.contentClipp.length === 0) {
+      this.content = "No content";
+    } else {
       this.content = kindleEntry.contentClipp;
     }
     this.parseAuthor();
@@ -106,68 +106,95 @@ export class KindleEntryParsed {
   }
 
   parseMetadata() {
-    const metadata: string = this.kindleEntry.metdataClipp;
-    const indexOfFirstSeparator: number = metadata.indexOf("|");
-    const indexOfSecondSeparator: number = metadata.indexOf(
+    const metadata = this.kindleEntry.metdataClipp;
+    const indexOfFirstSeparator = metadata.indexOf("|");
+    const indexOfSecondSeparator = metadata.indexOf(
       "|",
       indexOfFirstSeparator + 1
     );
 
-    if (indexOfFirstSeparator === -1 || indexOfSecondSeparator === -1) {
+    const hasPageMetadata = indexOfSecondSeparator !== -1;
+
+    let pageMetadata: string;
+    let locationMetadata: string;
+    let dateOfCreation: string;
+
+    if (indexOfFirstSeparator === -1) {
       throw new Error(`Could not parse metadata of: ${metadata}`);
     }
 
     // Obtaining separated strings
-    const pageMetadataStr: string = metadata
-      .substring(0, indexOfFirstSeparator)
-      .trim();
-    const locationMetadataStr: string = metadata
-      .substring(indexOfFirstSeparator + 1, indexOfSecondSeparator)
-      .trim();
-    const dateOfCreation: string = metadata
-      .substring(indexOfSecondSeparator + 1)
-      .trim();
+    if (!hasPageMetadata) {
+      // Doesnt have page count
+      locationMetadata = metadata.substring(0, indexOfFirstSeparator).trim();
+      dateOfCreation = metadata.substring(indexOfFirstSeparator + 1).trim();
+    } else {
+      pageMetadata = metadata.substring(0, indexOfFirstSeparator).trim();
+      locationMetadata = metadata
+        .substring(indexOfFirstSeparator + 1, indexOfSecondSeparator)
+        .trim();
+      dateOfCreation = metadata.substring(indexOfSecondSeparator + 1).trim();
+    }
 
     // Page parsing
-    const matchPage: RegExpExecArray | null | undefined = /\d+/.exec(
-      pageMetadataStr
-    );
-    if (matchPage == null) {
-      throw new Error(
-        `Can't parse page number from pageMetadataStr: ${pageMetadataStr}`
-      );
-    }
-    const page: number = Number(matchPage[0]);
-    if (isNaN(page)) {
-      throw new Error(
-        `Can't parse page number of: matchPage: ${matchPage} from pageMetadataStr: ${pageMetadataStr}`
-      );
+    if (hasPageMetadata) {
+      this.page = this.parsePage(pageMetadata);
     } else {
-      this.page = page;
+      this.page = 0;
     }
 
     // location parsing
+    this.location = this.parseLocation(locationMetadata);
+
+    // Date of creation parsing
+    this.dateOfCreation = this.parseDateOfCreation(dateOfCreation);
+
+    // Type of entry parsing
+    if (hasPageMetadata) {
+      this.type = this.parseEntryType(pageMetadata);
+    } else {
+      this.type = this.parseEntryType(locationMetadata);
+    }
+  }
+
+  parsePage(pageMetadata: string) {
+    const matchPage: RegExpExecArray | null | undefined = /\d+/.exec(
+      pageMetadata
+    );
+    if (!matchPage) {
+      throw new Error(
+        `Can't parse page number from pageMetadataStr: ${pageMetadata}`
+      );
+    }
+    const page = Number(matchPage[0]);
+    if (isNaN(page)) {
+      throw new Error(
+        `Can't parse page number of: matchPage: ${matchPage} from pageMetadataStr: ${pageMetadata}`
+      );
+    }
+    return page;
+  }
+
+  parseLocation(locationMetadata: string) {
     const matchLocation:
       | RegExpExecArray
       | null
-      | undefined = LocationRegex.exec(locationMetadataStr);
-    if (matchLocation == null) {
+      | undefined = LocationRegex.exec(locationMetadata);
+    if (!matchLocation) {
       throw new Error(
-        `Can't parse location from locationMetadataStr: ${locationMetadataStr}`
+        `Can't parse location from locationMetadataStr: ${locationMetadata}`
       );
     }
     const location: string = matchLocation[0];
-    this.location = location;
-
-    // Date of creation parsing
-    this.dateOfCreation = dateOfCreation;
-
-    // Type of entry parsing
-    this.type = this.parseEntryType(pageMetadataStr);
+    return location;
   }
 
-  parseEntryType(pageMetadataStr: string): EntryType {
-    const pageMetaddataLowerCase: string = pageMetadataStr.toLowerCase();
+  parseDateOfCreation(dateMetadata: string) {
+    return dateMetadata;
+  }
+
+  parseEntryType(pageMetadata: string): EntryType {
+    const pageMetaddataLowerCase: string = pageMetadata.toLowerCase();
     let isTypeNote: boolean = false;
     let isTypeHighlight: boolean = false;
     let isTypeBookmark: boolean = false;
@@ -204,7 +231,7 @@ export class KindleEntryParsed {
       return EntryType.Bookmark;
     } else {
       throw new Error(
-        `Couldn't parse type of Entry: pageMetadataStr: ${pageMetadataStr}`
+        `Couldn't parse type of Entry: pageMetadataStr: ${pageMetadata}`
       );
     }
   }
@@ -217,7 +244,7 @@ export class KindleEntryParsed {
       location: this.location,
       dateOfCreation: this.dateOfCreation,
       content: this.content,
-      type: this.type
+      type: this.type,
     };
   }
 }

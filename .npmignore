@@ -1,3 +1,5 @@
 .github/*
 node_modules/*
 clippings/*
+src/*
+.vscode/*
