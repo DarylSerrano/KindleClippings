@@ -50,6 +50,19 @@ const sampleEntries: Array<DataEntry> = [
     location: "35-36",
     dateOfCreation: "Added on Monday, July 20, 2020 12:58:07 AM",
     type: EntryType.Highlight
+  },
+  {
+    entry: new KindleEntry(
+      "Le Retour du roi (J.R.R. Tolkien)",
+      "- Votre surlignement sur la page 200 | emplacement 3054-3056 | Ajouté le mercredi 16 août 2017 02:14:10",
+      "Il ne nous appartient toutefois pas de rassembler toutes les marées du monde, mais de faire ce qui est en nous pour le secours des années dans lesquelles nous sommes placés, déracinant le mal dans les champs que nous connaissons, de sorte que ceux qui vivront après nous puissent avoir une terre propre à cultiver."
+    ),
+    titleParsed: "Le Retour du roi",
+    author: "J.R.R. Tolkien",
+    page: 200,
+    location: "3054-3056",
+    dateOfCreation: "Ajouté le mercredi 16 août 2017 02:14:10",
+    type: EntryType.Highlight
   }
 ];
 
