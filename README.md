@@ -5,7 +5,7 @@
 Package for parsing a MyClippings.txt file obtained from a Kindle and organizing it
 
 
-For now, it only parses clippings made on a Kindle with language setted on **English or Spanish**
+For now, it only parses clippings made on a Kindle with language set on **English, Spanish or French**
 ## Instaling and using it in your code
 `npm i @darylserrano/kindle-clippings`
 

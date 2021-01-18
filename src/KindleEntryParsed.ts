@@ -4,8 +4,8 @@ const LocationRegex = Object.freeze(/\d+-?\d*/);
 
 export const EntryTypeTranslations = Object.freeze({
   NOTE: ["note", "nota"],
-  HIGHLIGHT: ["highlight", "subrayado"],
-  BOOKMARK: ["bookmark", "marcador"],
+  HIGHLIGHT: ["highlight", "subrayado", "surlignement"],
+  BOOKMARK: ["bookmark", "marcador", "signet"],
 });
 
 export enum EntryType {
