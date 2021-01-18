@@ -1,6 +1,6 @@
 {
   "name": "@darylserrano/kindle-clippings",
-  "version": "2.1.5",
+  "version": "2.2.5",
   "description": "Package for parsing a MyClippings.txt file obtained from a Kindle and organizing it",
   "main": "dist/index.js",
   "scripts": {
