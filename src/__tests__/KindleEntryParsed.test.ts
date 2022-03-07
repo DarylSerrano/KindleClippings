@@ -63,12 +63,25 @@ const sampleEntries: Array<DataEntry> = [
     location: "3054-3056",
     dateOfCreation: "Ajouté le mercredi 16 août 2017 02:14:10",
     type: EntryType.Highlight
+  },
+  {
+    entry: new KindleEntry(
+      "Thinking in Systems",
+      "- Your Highlight on page 14 | Location 380-381 | Added on Saturday, April 13, 2019 3:43:59 PM",
+      "It’s easier to learn about a system’s elements than about its interconnections."
+    ),
+    titleParsed: "Thinking in Systems",
+    author: "",
+    page: 14,
+    location: "380-381",
+    dateOfCreation: "Added on Saturday, April 13, 2019 3:43:59 PM",
+    type: EntryType.Highlight
   }
 ];
 
 // eslint-disable-next-line no-undef
 describe("KindleEntryParsed", () => {
-
+ 
   describe("parseAuthor", () => {
     test("Obtains author", () => {
       // AAA

@@ -45,9 +45,8 @@ export class KindleEntryParsed {
     let ocurrenceIndex: number = bookTitleAndAuthors.indexOf("(");
 
     if (ocurrenceIndex === -1) {
-      throw new Error(
-        `Could not parse author from bookTitleAndAuthors of KindleEntry: ${bookTitleAndAuthors}`
-      );
+      this.authors = "";
+      return;
     }
 
     let nextOcurrenceIndex: number = bookTitleAndAuthors.indexOf(
@@ -79,6 +78,11 @@ export class KindleEntryParsed {
   parseBook() {
     const bookTitleAndAuthors: string = this.kindleEntry.bookTitleAndAuthors;
     let firstOccurrenceIndex: number = bookTitleAndAuthors.indexOf("(");
+    if (firstOccurrenceIndex === -1) {
+      this.bookTile = bookTitleAndAuthors.trim();
+      return;
+    }
+
     let nextOccurrenceIndex: number = bookTitleAndAuthors.indexOf(
       "(",
       firstOccurrenceIndex + 1
